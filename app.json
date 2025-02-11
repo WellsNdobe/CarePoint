@@ -45,6 +45,12 @@
       },
       "eas": {
         "projectId": "90a97bf1-5260-49eb-b525-b74df6eb0191"
+      },
+
+      "expo": {
+        "android": {
+          "minSdkVersion": 26
+        }
       }
     }
   }
