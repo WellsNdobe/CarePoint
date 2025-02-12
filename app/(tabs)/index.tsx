@@ -31,13 +31,10 @@ export default function HomeScreen() {
         barStyle="dark-content" // changes text/icons
       />
 
-      <HealthStatusCard
-        lastCheckup="Last checkup: 3 months ago"
-        medications={2}
-      />
+      <HealthStatusCard />
 
       <EmergencyCard />
-      <DynamicAppointments appointments={mockAppointments} />
+      <DynamicAppointments />
     </ScrollView>
   );
 }

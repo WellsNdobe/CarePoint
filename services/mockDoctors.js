@@ -1,7 +1,7 @@
 export const doctors = [
   {
     id: 1,
-    image: "https://example.com/images/dr-light-mabelane.jpg",
+    image: "https://randomuser.me/api/portraits/women/45.jpg",
     name: "Dr. Light Mabelane",
     specialization: "Pediatrician",
     location: "Sandton",
@@ -16,8 +16,24 @@ export const doctors = [
     rating: "4.7",
   },
   {
+    id: 11,
+    image: "https://randomuser.me/api/portraits/men/16.jpg",
+    name: "Dr. Charles Ndobe",
+    specialization: "Pediatrician",
+    location: "Sandton",
+    services: [
+      { name: "Consultation", price: 150 },
+      { name: "Child Vaccination", price: 100 },
+      { name: "Newborn Checkup", price: 180 },
+      { name: "Growth Monitoring", price: 120 },
+    ],
+    phone: "+27 11 123 4567",
+    experience: "15 years",
+    rating: "4.7",
+  },
+  {
     id: 2,
-    image: "https://example.com/images/dr-jane-doe.jpg",
+    image: "https://randomuser.me/api/portraits/women/44.jpg",
     name: "Dr. Jane Doe",
     specialization: "Cardiologist",
     location: "Johannesburg",
@@ -32,7 +48,7 @@ export const doctors = [
   },
   {
     id: 3,
-    image: "https://example.com/images/dr-john-smith.jpg",
+    image: "https://randomuser.me/api/portraits/men/46.jpg",
     name: "Dr. John Smith",
     specialization: "Dermatologist",
     location: "Cape Town",
@@ -47,7 +63,7 @@ export const doctors = [
   },
   {
     id: 4,
-    image: "https://example.com/images/dr-emma-jones.jpg",
+    image: "https://randomuser.me/api/portraits/women/47.jpg",
     name: "Dr. Emma Jones",
     specialization: "General Practitioner",
     location: "Pretoria",
@@ -62,7 +78,7 @@ export const doctors = [
   },
   {
     id: 5,
-    image: "https://example.com/images/dr-peter-parker.jpg",
+    image: "https://randomuser.me/api/portraits/men/47.jpg",
     name: "Dr. Peter Parker",
     specialization: "Neurologist",
     location: "Durban",

@@ -18,7 +18,7 @@ import { db } from "@/firebaseConfig";
 
 export default function AppointmentBookingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log(id);
+
   // Find doctor based on ID from route
   const doctor: Doctor | undefined = doctors.find((d) => d.id === Number(id));
 
