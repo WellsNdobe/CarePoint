@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   View,
   Text,
@@ -249,22 +249,15 @@ export default function DoctorDetailScreen() {
             </View>
           ))}
         </View>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => router.push(`/doctors/appointment?id=${doctor.id}`)}
+          activeOpacity={0.9}
+        >
+          <Ionicons name="calendar" size={20} color={theme.colors.white} />
+          <Text style={styles.buttonText}>Make Appointment</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Appointment Button */}
-      <TouchableOpacity
-        style={styles.primaryButton}
-        onPress={() =>
-          Alert.alert(
-            "Coming Soon",
-            "The appointment booking feature is still in development."
-          )
-        }
-        activeOpacity={0.9}
-      >
-        <Ionicons name="calendar" size={20} color={theme.colors.white} />
-        <Text style={styles.buttonText}>Make Appointment</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
