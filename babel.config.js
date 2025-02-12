@@ -14,6 +14,7 @@ module.exports = function (api) {
             "@types": "./types", // Add this line
             "@assets": "./assets",
             "@utils": "./utils",
+            "@env": "./env", // Add this line
           },
         },
       ],
