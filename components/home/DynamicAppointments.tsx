@@ -2,21 +2,72 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; // Adjust the path to your firebaseConfig
 
 interface Appointment {
   id: string;
-  doctor: string;
-  specialization: string;
+  doctorName: string;
+  services: string[];
   date: string;
   time: string;
+  patientName: string;
+  status: string;
+  contactInfo: string;
+  createdAt: string;
 }
 
-interface DynamicAppointmentsProps {
-  appointments: Appointment[];
-}
-
-const DynamicAppointments = ({ appointments }: DynamicAppointmentsProps) => {
+const DynamicAppointments = () => {
   const router = useRouter();
+  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      try {
+        const appointmentsRef = collection(db, "appointments");
+        const q = query(
+          appointmentsRef,
+          orderBy("createdAt", "desc"),
+          limit(1)
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          const data = doc.data();
+          setAppointment({
+            id: doc.id,
+            doctorName: data.doctorName,
+            services: data.services,
+            date: data.date,
+            time: data.time,
+            patientName: data.patientName,
+            status: data.status,
+            contactInfo: data.contactInfo,
+            createdAt: data.createdAt.toDate().toString(),
+          });
+        } else {
+          setAppointment(null);
+        }
+      } catch (error) {
+        console.error("Error fetching appointment: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointment();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -27,7 +78,27 @@ const DynamicAppointments = ({ appointments }: DynamicAppointmentsProps) => {
         </TouchableOpacity>
       </View>
 
-      {appointments.length === 0 ? (
+      {appointment ? (
+        <TouchableOpacity style={styles.appointmentCard}>
+          <View style={styles.appointmentInfo}>
+            <Text style={styles.doctorName}>{appointment.doctorName}</Text>
+            <Text style={styles.specialization}>
+              {appointment.services.join(", ")}
+            </Text>
+            <Text style={styles.time}>
+              {appointment.date} • {appointment.time}
+            </Text>
+            <Text style={styles.patientName}>
+              Patient: {appointment.patientName}
+            </Text>
+            <Text style={styles.status}>Status: {appointment.status}</Text>
+            <Text style={styles.contactInfo}>
+              Contact: {appointment.contactInfo}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#6B7280" />
+        </TouchableOpacity>
+      ) : (
         <View style={styles.emptyContainer}>
           <Ionicons name="calendar-clear" size={32} color="#9CA3AF" />
           <Text style={styles.emptyText}>No upcoming appointments</Text>
@@ -38,21 +109,6 @@ const DynamicAppointments = ({ appointments }: DynamicAppointmentsProps) => {
             <Text style={styles.bookButtonText}>Book Now</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        appointments.map((appointment) => (
-          <TouchableOpacity key={appointment.id} style={styles.appointmentCard}>
-            <View style={styles.appointmentInfo}>
-              <Text style={styles.doctorName}>{appointment.doctor}</Text>
-              <Text style={styles.specialization}>
-                {appointment.specialization}
-              </Text>
-              <Text style={styles.time}>
-                {appointment.date} • {appointment.time}
-              </Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#6B7280" />
-          </TouchableOpacity>
-        ))
       )}
     </View>
   );
@@ -112,6 +168,10 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  appointmentInfo: {
+    flex: 1,
+    marginRight: 8,
+  },
   doctorName: {
     fontWeight: "500",
     color: "#1F2937",
@@ -122,6 +182,21 @@ const styles = StyleSheet.create({
   },
   time: {
     color: "#3B82F6",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  patientName: {
+    color: "#6B7280",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  status: {
+    color: "#6B7280",
+    fontSize: 14,
+    marginTop: 4,
+  },
+  contactInfo: {
+    color: "#6B7280",
     fontSize: 14,
     marginTop: 4,
   },

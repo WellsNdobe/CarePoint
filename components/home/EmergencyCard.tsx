@@ -7,6 +7,7 @@ import {
   Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 const EmergencyCard = () => {
   const handleEmergencyCall = () => {
@@ -25,7 +26,10 @@ const EmergencyCard = () => {
         <Text style={styles.buttonText}>Emergency Call</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.replace("/ambulance")}
+      >
         <Ionicons name="medkit" size={24} color="#3B82F6" />
         <Text style={[styles.buttonText, styles.secondaryButtonText]}>
           Get Ambulance

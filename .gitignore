@@ -78,4 +78,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+#firebase
+firebaseConfig.js
+
 # @end expo-cli
