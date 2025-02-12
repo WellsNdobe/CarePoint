@@ -19,7 +19,7 @@ AI Integration: (Future support for AI-driven responses)
 
 ## How to run
 
-git clone https://github.com/your-username/CarePoint.git
+https://github.com/WellsNdobe/CarePoint.git
 cd CarePoint
 npm install
 npx expo start
