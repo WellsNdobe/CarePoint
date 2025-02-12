@@ -1,50 +1,36 @@
-# Welcome to your Expo app 👋
+##CarePoint 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+CarePoint is a React Native Expo application designed to help users find medical professionals based on specialization and location, view available services and pricing, and book appointments seamlessly. With an integrated ambulance request system, AI-powered medical assistance, and real-time service availability, CarePoint revolutionizes healthcare accessibility.
 
-## Get started
+##Features 
 
-1. Install dependencies
+🔍 Find Medical Professionals – Search by specialization and location.
+💰 View Services & Pricing – Transparent medical service costs.
+📅 Book Appointments – Schedule visits with ease.
+🚑 On-Demand Ambulance Request – Get emergency help faster, like calling an Uber.
+🤖 AI-Powered Medical Advice – Ask health-related questions anytime.
+🔐 Secure Authentication – Firebase-backed user management.
 
-   ```bash
-   npm install
-   ```
+##Tech Stack 
 
-2. Start the app
+Frontend: React Native (Expo)
+TypeScript
+Backend & Database: Firebase Firestore
+State Management: Context API
+AI Integration: (Future support for AI-driven responses)
 
-   ```bash
-    npx expo start
-   ```
+## How to run
 
-In the output, you'll find options to open the app in a
+https://github.com/WellsNdobe/CarePoint.git
+cd CarePoint
+npm install
+npx expo start
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Note when running
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You can run the application on your own mobile device through the Expo go app found on Playstore (Recommended)
+or
+You can run the application in an emulator in your local device.
 
-## Get a fresh project
 
-When you're ready, run:
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
