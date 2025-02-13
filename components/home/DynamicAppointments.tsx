@@ -88,19 +88,12 @@ const DynamicAppointments = () => {
             <Text style={styles.time}>
               {appointment.date} • {appointment.time}
             </Text>
-            <Text style={styles.patientName}>
-              Patient: {appointment.patientName}
-            </Text>
-            <Text style={styles.status}>Status: {appointment.status}</Text>
-            <Text style={styles.contactInfo}>
-              Contact: {appointment.contactInfo}
-            </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#6B7280" />
         </TouchableOpacity>
       ) : (
         <View style={styles.emptyContainer}>
-          <Ionicons name="calendar-clear" size={32} color="#9CA3AF" />
+          <Ionicons name="calendar-clear" size={48} color="#9CA3AF" />
           <Text style={styles.emptyText}>No upcoming appointments</Text>
           <TouchableOpacity
             style={styles.bookButton}
@@ -116,16 +109,16 @@ const DynamicAppointments = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
     color: "#1F2937",
   },
@@ -135,24 +128,26 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     alignItems: "center",
-    padding: 20,
+    padding: 24,
     backgroundColor: "#F9FAFB",
     borderRadius: 12,
   },
   emptyText: {
     color: "#6B7280",
     marginVertical: 8,
+    fontSize: 16,
   },
   bookButton: {
     backgroundColor: "#3B82F6",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
     borderRadius: 8,
-    marginTop: 8,
+    marginTop: 16,
   },
   bookButtonText: {
     color: "white",
     fontWeight: "500",
+    fontSize: 16,
   },
   appointmentCard: {
     flexDirection: "row",
@@ -161,11 +156,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 16,
     borderRadius: 12,
-    marginVertical: 4,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
     elevation: 2,
   },
   appointmentInfo: {
@@ -173,32 +167,19 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   doctorName: {
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#1F2937",
+    fontSize: 18,
   },
   specialization: {
     color: "#6B7280",
     fontSize: 14,
+    marginTop: 4,
   },
   time: {
     color: "#3B82F6",
     fontSize: 14,
-    marginTop: 4,
-  },
-  patientName: {
-    color: "#6B7280",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  status: {
-    color: "#6B7280",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  contactInfo: {
-    color: "#6B7280",
-    fontSize: 14,
-    marginTop: 4,
+    marginTop: 8,
   },
 });
 

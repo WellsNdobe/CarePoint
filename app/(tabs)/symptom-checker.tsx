@@ -16,6 +16,19 @@ const openai = new OpenAI({
   apiKey: "sk-cd3c7b4e402949b1aa22a71d17fe6a31", // Get from DeepSeek platform
 });
 
+const exampleSymptoms = [
+  "Headache",
+  "Fever",
+  "Cough",
+  "Stomach pain",
+  "Fatigue",
+  "Dizziness",
+  "Chest pain",
+  "Shortness of breath",
+  "Nausea",
+  "Sore throat",
+];
+
 export default function SymptomCheckerScreen() {
   const [query, setQuery] = useState("");
   const [conversation, setConversation] = useState<
@@ -59,13 +72,22 @@ export default function SymptomCheckerScreen() {
         ...prev,
         {
           sender: "bot",
-          message: "Can't help if you haven't paid me",
+          message:
+            "Insufficient Balance. Please top up your account for the API",
         },
       ]);
     } finally {
       setLoading(false);
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }
+  };
+
+  const handleExampleSymptomClick = (symptom: string) => {
+    setQuery(symptom);
+  };
+
+  const handleClearConversation = () => {
+    setConversation([]);
   };
 
   return (
@@ -104,6 +126,20 @@ export default function SymptomCheckerScreen() {
         )}
       </ScrollView>
 
+      <View style={styles.exampleSymptomsContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {exampleSymptoms.map((symptom, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.exampleSymptomButton}
+              onPress={() => handleExampleSymptomClick(symptom)}
+            >
+              <Text style={styles.exampleSymptomText}>{symptom}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -122,6 +158,13 @@ export default function SymptomCheckerScreen() {
           <Text style={styles.sendButtonText}>➔</Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={styles.clearButton}
+        onPress={handleClearConversation}
+      >
+        <Text style={styles.clearButtonText}>Clear Conversation</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -178,6 +221,24 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "#333",
   },
+  exampleSymptomsContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+    backgroundColor: "#fff",
+  },
+  exampleSymptomButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "#E3F2FD",
+    marginRight: 8,
+  },
+  exampleSymptomText: {
+    fontSize: 14,
+    color: "#1976D2",
+  },
   inputContainer: {
     flexDirection: "row",
     padding: 16,
@@ -210,5 +271,17 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     marginLeft: 4,
+  },
+  clearButton: {
+    alignSelf: "center",
+    marginVertical: 16,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#FFEBEE",
+  },
+  clearButtonText: {
+    color: "#D32F2F",
+    fontSize: 14,
+    fontWeight: "500",
   },
 });

@@ -17,6 +17,7 @@ export default function AmbulanceScreen() {
     latitude: number;
     longitude: number;
   } | null>(null);
+  const [showSimulationCard, setShowSimulationCard] = useState(true);
   const [eta, setEta] = useState<number | null>(null);
   const [ambulanceRequested, setAmbulanceRequested] = useState(false);
   const [ambulanceLocation, setAmbulanceLocation] = useState<{
@@ -24,6 +25,12 @@ export default function AmbulanceScreen() {
     longitude: number;
   } | null>(null);
   const [emergencyType, setEmergencyType] = useState("");
+  const [searching, setSearching] = useState(false); // State to control the searching animation
+  const [availableAmbulances, setAvailableAmbulances] = useState([
+    { latitude: 37.78825, longitude: -122.4324 },
+    { latitude: 37.78125, longitude: -122.4224 },
+  ]);
+
   const fadeAnim = useState(new Animated.Value(0))[0];
 
   // Request location permission and get current location
@@ -100,6 +107,7 @@ export default function AmbulanceScreen() {
     };
   }, [ambulanceRequested, ambulanceLocation, userLocation]);
 
+  // Handle the ambulance request with the searching animation
   const handleRequestAmbulance = () => {
     if (!emergencyType) {
       Alert.alert(
@@ -112,13 +120,20 @@ export default function AmbulanceScreen() {
       Alert.alert("Location Error", "User location not available.");
       return;
     }
-    setAmbulanceRequested(true);
-    // Simulate the closest available ambulance starting from a fixed location
-    setAmbulanceLocation({
-      latitude: userLocation.latitude - 0.01,
-      longitude: userLocation.longitude - 0.02,
-    });
-    setEta(8);
+
+    // Start searching animation
+    setSearching(true);
+
+    setTimeout(() => {
+      setSearching(false);
+      setAmbulanceRequested(true);
+      // Simulate the closest available ambulance starting from a fixed location
+      setAmbulanceLocation({
+        latitude: userLocation.latitude - 0.01,
+        longitude: userLocation.longitude - 0.02,
+      });
+      setEta(8);
+    }, 3000); // Display searching animation for 3 seconds
   };
 
   if (!userLocation) {
@@ -132,6 +147,16 @@ export default function AmbulanceScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Simulation Card */}
+      {showSimulationCard && (
+        <View style={styles.simulationCard}>
+          <Text style={styles.simulationCardText}>
+            This page is a simulation. The true functionality is still in
+            development.
+          </Text>
+        </View>
+      )}
+
       <MapView
         style={styles.map}
         initialRegion={{
@@ -147,6 +172,16 @@ export default function AmbulanceScreen() {
           </View>
         </Marker>
 
+        {availableAmbulances.map((ambulance, index) => (
+          <Marker key={index} coordinate={ambulance}>
+            <MaterialCommunityIcons
+              name="ambulance"
+              size={40}
+              color="#DC2626"
+            />
+          </Marker>
+        ))}
+
         {ambulanceRequested && ambulanceLocation && (
           <Marker coordinate={ambulanceLocation}>
             <Animated.View style={{ opacity: fadeAnim }}>
@@ -159,6 +194,13 @@ export default function AmbulanceScreen() {
           </Marker>
         )}
       </MapView>
+
+      {searching && (
+        <View style={styles.searchingContainer}>
+          <ActivityIndicator size="large" color="#DC2626" />
+          <Text>Searching for available ambulances...</Text>
+        </View>
+      )}
 
       <View style={styles.emergencyPanel}>
         <Text style={styles.title}>Emergency Assistance</Text>
@@ -262,6 +304,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 16,
     elevation: 5,
   },
+  searchingContainer: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -100 }, { translateY: -30 }],
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    padding: 16,
+    borderRadius: 8,
+  },
   title: { fontSize: 18, fontWeight: "bold", marginBottom: 12 },
   emergencyTypeContainer: {
     flexDirection: "row",
@@ -311,6 +362,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B82F6",
     padding: 12,
     borderRadius: 8,
+  },
+  simulationCard: {
+    position: "absolute",
+    top: "10%",
+    left: "5%",
+    right: "5%",
+    backgroundColor: "#F3F4F6",
+    padding: 16,
+    borderRadius: 8,
+    borderColor: "#DC2626",
+    borderWidth: 1,
+    elevation: 5,
+    zIndex: 9999,
+  },
+  simulationCardText: {
+    fontSize: 16,
+    color: "#DC2626",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   callButtonText: { color: "white", marginLeft: 8, fontSize: 16 },
 });
