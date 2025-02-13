@@ -17,11 +17,11 @@ Frontend: React Native (Expo)
 TypeScript
 Backend & Database: Firebase Firestore
 State Management: Context API
-AI Integration: (Future support for AI-driven responses)
+AI Integration: 
 
 ## How to run
 
-https://github.com/WellsNdobe/CarePoint.git
+git clone https://github.com/WellsNdobe/CarePoint.git
 cd CarePoint
 npm install
 npx expo start
@@ -31,6 +31,9 @@ npx expo start
 You can run the application on your own mobile device through the Expo go app found on Playstore (Recommended)
 or
 You can run the application in an emulator in your local device.
+
+#This application is still in development
+
 
 
 
