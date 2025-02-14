@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig"; // Import from our firebase config
 import { doc, setDoc } from "firebase/firestore";

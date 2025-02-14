@@ -1,10 +1,16 @@
-// components/home/DynamicAppointments.tsx
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  FlatList,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { db } from "../../firebaseConfig"; // Adjust the path to your firebaseConfig
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { db, auth } from "../../firebaseConfig"; // Adjust path if necessary
 
 interface Appointment {
   id: string;
@@ -20,45 +26,53 @@ interface Appointment {
 
 const DynamicAppointments = () => {
   const router = useRouter();
-  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    const fetchAppointment = async () => {
+    const fetchAppointments = async () => {
+      if (!auth.currentUser?.email) {
+        setLoading(false);
+        return;
+      }
+
       try {
+        const userEmail = auth.currentUser.email;
         const appointmentsRef = collection(db, "appointments");
         const q = query(
           appointmentsRef,
-          orderBy("createdAt", "desc"),
-          limit(1)
+          where("userEmail", "==", userEmail),
+          orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          const data = doc.data();
-          setAppointment({
-            id: doc.id,
-            doctorName: data.doctorName,
-            services: data.services,
-            date: data.date,
-            time: data.time,
-            patientName: data.patientName,
-            status: data.status,
-            contactInfo: data.contactInfo,
-            createdAt: data.createdAt.toDate().toString(),
-          });
-        } else {
-          setAppointment(null);
-        }
+        const fetchedAppointments: Appointment[] = querySnapshot.docs.map(
+          (doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              doctorName: data.doctorName,
+              services: data.services,
+              date: data.date,
+              time: data.time,
+              patientName: data.patientName,
+              status: data.status,
+              contactInfo: data.contactInfo,
+              createdAt: data.createdAt.toDate().toString(),
+            };
+          }
+        );
+
+        setAppointments(fetchedAppointments);
       } catch (error) {
-        console.error("Error fetching appointment: ", error);
+        console.error("Error fetching appointments:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAppointment();
+    fetchAppointments();
   }, []);
 
   if (loading) {
@@ -73,20 +87,22 @@ const DynamicAppointments = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Upcoming Appointments</Text>
-        <TouchableOpacity onPress={() => router.push("/search")}>
-          <Text style={styles.seeAll}>See All</Text>
-        </TouchableOpacity>
+        {appointments.length > 1 && (
+          <TouchableOpacity onPress={() => setModalVisible(true)}>
+            <Text style={styles.seeAll}>See All</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      {appointment ? (
+      {appointments.length > 0 ? (
         <TouchableOpacity style={styles.appointmentCard}>
           <View style={styles.appointmentInfo}>
-            <Text style={styles.doctorName}>{appointment.doctorName}</Text>
+            <Text style={styles.doctorName}>{appointments[0].doctorName}</Text>
             <Text style={styles.specialization}>
-              {appointment.services.join(", ")}
+              {appointments[0].services.join(", ")}
             </Text>
             <Text style={styles.time}>
-              {appointment.date} • {appointment.time}
+              {appointments[0].date} • {appointments[0].time}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color="#6B7280" />
@@ -103,84 +119,89 @@ const DynamicAppointments = () => {
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Modal for displaying all appointments */}
+      <Modal visible={modalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>All Appointments</Text>
+            <FlatList
+              data={appointments}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.appointmentCard}>
+                  <Text style={styles.doctorName}>{item.doctorName}</Text>
+                  <Text style={styles.specialization}>
+                    {item.services.join(", ")}
+                  </Text>
+                  <Text style={styles.time}>
+                    {item.date} • {item.time}
+                  </Text>
+                </View>
+              )}
+            />
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 16,
-  },
+  container: { padding: 16 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#1F2937",
-  },
-  seeAll: {
-    color: "#3B82F6",
-    fontWeight: "500",
-  },
-  emptyContainer: {
-    alignItems: "center",
-    padding: 24,
-    backgroundColor: "#F9FAFB",
-    borderRadius: 12,
-  },
-  emptyText: {
-    color: "#6B7280",
-    marginVertical: 8,
-    fontSize: 16,
-  },
-  bookButton: {
-    backgroundColor: "#3B82F6",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  bookButtonText: {
-    color: "white",
-    fontWeight: "500",
-    fontSize: 16,
-  },
+  title: { fontSize: 18, fontWeight: "bold" },
+  seeAll: { color: "#7752FE", fontWeight: "bold" },
   appointmentCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "#F3F4F6",
     padding: 16,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    borderRadius: 10,
+    marginTop: 10,
   },
-  appointmentInfo: {
+  appointmentInfo: { flex: 1 },
+  doctorName: { fontSize: 16, fontWeight: "bold" },
+  specialization: { color: "#6B7280" },
+  time: { color: "#6B7280", fontSize: 14 },
+  emptyContainer: { alignItems: "center", marginTop: 20 },
+  emptyText: { color: "#9CA3AF", marginTop: 10 },
+  bookButton: {
+    backgroundColor: "#7752FE",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  bookButtonText: { color: "white", fontWeight: "bold" },
+  modalContainer: {
     flex: 1,
-    marginRight: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
-  doctorName: {
-    fontWeight: "600",
-    color: "#1F2937",
-    fontSize: 18,
+  modalContent: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
   },
-  specialization: {
-    color: "#6B7280",
-    fontSize: 14,
-    marginTop: 4,
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+  closeButton: {
+    backgroundColor: "#7752FE",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 10,
+    alignItems: "center",
   },
-  time: {
-    color: "#3B82F6",
-    fontSize: 14,
-    marginTop: 8,
-  },
+  closeButtonText: { color: "white", fontWeight: "bold" },
 });
 
 export default DynamicAppointments;
