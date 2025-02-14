@@ -6,31 +6,29 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  TextInput,
+  StatusBar,
 } from "react-native";
 import { useState, useEffect, SetStateAction } from "react";
 import { Doctor } from "@/types/doctor";
 import { doctors } from "@/services/mockDoctors";
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
-import { addDoc, collection } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebaseConfig";
+import { useAuth } from "../context/AuthContext";
 
 export default function AppointmentBookingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { user } = useAuth();
 
-  // Find doctor based on ID from route
   const doctor: Doctor | undefined = doctors.find((d) => d.id === Number(id));
 
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
 
-  // Generate time slots
   const generateTimeSlots = () => [
     "09:00 AM",
     "10:00 AM",
@@ -43,30 +41,26 @@ export default function AppointmentBookingScreen() {
   useEffect(() => {
     if (selectedDate) {
       setAvailableSlots(generateTimeSlots());
-      setSelectedTime(""); // Reset time when date changes
+      setSelectedTime("");
     }
   }, [selectedDate]);
 
   const handleBooking = async () => {
     if (
-      !name ||
-      !contact ||
+      !user?.email ||
       selectedServices.length === 0 ||
       !selectedDate ||
       !selectedTime
     ) {
-      Alert.alert(
-        "Error",
-        "Please fill in all details, select at least one service, and choose a date/time."
-      );
+      Alert.alert("Error", "Please select a service, date, and time.");
       return;
     }
 
     setLoading(true);
     try {
-      await addDoc(collection(db, "appointments"), {
-        patientName: name,
-        contactInfo: contact,
+      const appointmentRef = doc(db, "appointments", user.email);
+      await setDoc(appointmentRef, {
+        userEmail: user.email,
         doctorId: doctor?.id,
         doctorName: doctor?.name,
         services: selectedServices,
@@ -77,11 +71,9 @@ export default function AppointmentBookingScreen() {
       });
 
       Alert.alert(
-        "Appointment Confirmed",
-        `Your appointment with ${doctor?.name} on ${selectedDate} at ${selectedTime} has been booked.`
+        "Success",
+        `Appointment with ${doctor?.name} on ${selectedDate} at ${selectedTime} confirmed.`
       );
-      setName("");
-      setContact("");
       setSelectedServices([]);
       setSelectedDate("");
       setSelectedTime("");
@@ -92,19 +84,12 @@ export default function AppointmentBookingScreen() {
     }
   };
 
-  const toggleServiceSelection = (serviceName: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(serviceName)
-        ? prev.filter((s) => s !== serviceName)
-        : [...prev, serviceName]
-    );
-  };
-
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={{ padding: 20 }}
     >
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       <Text style={styles.title}>Book an Appointment</Text>
 
       {doctor ? (
@@ -115,7 +100,6 @@ export default function AppointmentBookingScreen() {
         <Text style={styles.subtitle}>Doctor not found</Text>
       )}
 
-      {/* Calendar Component */}
       <Text style={styles.sectionTitle}>Select Date</Text>
       <Calendar
         minDate={new Date().toISOString().split("T")[0]}
@@ -125,13 +109,9 @@ export default function AppointmentBookingScreen() {
         markedDates={{
           [selectedDate]: { selected: true, selectedColor: "#007BFF" },
         }}
-        theme={{
-          todayTextColor: "#007BFF",
-          arrowColor: "#007BFF",
-        }}
+        theme={{ todayTextColor: "#007BFF", arrowColor: "#007BFF" }}
       />
 
-      {/* Time Slot Selection */}
       {selectedDate && (
         <>
           <Text style={styles.sectionTitle}>Available Time Slots</Text>
@@ -160,22 +140,6 @@ export default function AppointmentBookingScreen() {
         </>
       )}
 
-      {/* Input Fields */}
-      <TextInput
-        style={styles.input}
-        placeholder="Your Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Your Contact Number"
-        value={contact}
-        onChangeText={setContact}
-        keyboardType="phone-pad"
-      />
-
-      {/* Services Selection */}
       <Text style={styles.sectionTitle}>Select Services</Text>
       {doctor?.services.map((service, index) => (
         <TouchableOpacity
@@ -185,14 +149,19 @@ export default function AppointmentBookingScreen() {
             selectedServices.includes(service.name) &&
               styles.serviceItemSelected,
           ]}
-          onPress={() => toggleServiceSelection(service.name)}
+          onPress={() =>
+            setSelectedServices((prev) =>
+              prev.includes(service.name)
+                ? prev.filter((s) => s !== service.name)
+                : [...prev, service.name]
+            )
+          }
         >
           <Text style={{ flex: 1, color: "#333" }}>{service.name}</Text>
           <Text style={{ color: "#007BFF" }}>R{service.price}</Text>
         </TouchableOpacity>
       ))}
 
-      {/* Confirm Appointment Button */}
       <TouchableOpacity
         style={styles.bookButton}
         onPress={handleBooking}
@@ -211,12 +180,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff" },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
   subtitle: { fontSize: 18, color: "#555", marginBottom: 20 },
-  input: {
-    backgroundColor: "#f1f1f1",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -237,20 +200,10 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 20,
   },
-  timeSlot: {
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#f1f1f1",
-  },
-  selectedTimeSlot: {
-    backgroundColor: "#007BFF",
-  },
-  timeText: {
-    color: "#333",
-  },
-  selectedTimeText: {
-    color: "white",
-  },
+  timeSlot: { padding: 10, borderRadius: 5, backgroundColor: "#f1f1f1" },
+  selectedTimeSlot: { backgroundColor: "#007BFF" },
+  timeText: { color: "#333" },
+  selectedTimeText: { color: "white" },
   serviceItemSelected: { backgroundColor: "#cce5ff" },
   bookButton: {
     flexDirection: "row",
