@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { useAuth } from "../context/AuthContext";
@@ -33,6 +34,10 @@ export default function Signup() {
 
   return (
     <View style={styles.container}>
+      <StatusBar
+        // Android only
+        barStyle="dark-content" // changes text/icons
+      />
       <Text style={styles.title}>Create Account</Text>
 
       <TouchableOpacity

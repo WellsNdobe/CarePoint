@@ -1,45 +1,98 @@
 // components/profile/ProfilePage.tsx
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebaseConfig"; // Adjust the path to your firebaseConfig
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 import { useAuth } from "../context/AuthContext";
+import { updateProfile } from "firebase/auth";
 
 const ProfilePage = () => {
-  const { user, logout } = useAuth(); // useAuth is now inside the component
-  const [upcomingAppointmentsCount, setUpcomingAppointmentsCount] = useState(0);
+  const { user, logout } = useAuth();
+  const [editing, setEditing] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUpcomingAppointments = async () => {
-      try {
-        const appointmentsRef = collection(db, "appointments");
-        const q = query(appointmentsRef, where("status", "==", "pending"));
-        const querySnapshot = await getDocs(q);
-        setUpcomingAppointmentsCount(querySnapshot.size);
-      } catch (error) {
-        console.error("Error fetching appointments: ", error);
-      } finally {
-        setLoading(false);
+    const fetchUserData = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, "users", user.email);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setFirstName(userData.firstName || "");
+            setLastName(userData.lastName || "");
+          }
+        } catch (error) {
+          console.error("Error fetching user data: ", error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
-    fetchUpcomingAppointments();
-  }, []);
+    fetchUserData();
+  }, [user]);
 
-  const handleLogout = async () => {
+  const handleUpdateProfile = async () => {
+    if (!user) return;
+
     try {
-      await logout();
+      // Update Firestore document
+      const userDocRef = doc(db, "users", user.email);
+      await updateDoc(userDocRef, {
+        firstName,
+        lastName,
+      });
+
+      // Update Firebase Authentication display name
+      await updateProfile(user, {
+        displayName: `${firstName} ${lastName}`,
+      });
+
+      setEditing(false);
+      Alert.alert("Success", "Profile updated successfully!");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Error updating profile: ", error);
+      Alert.alert("Error", "Failed to update profile");
     }
   };
+
+  const renderEditableField = (
+    label: string,
+    value: string,
+    setter: (value: string) => void
+  ) => (
+    <View style={styles.fieldContainer}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      {editing ? (
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={setter}
+          placeholder={`Enter ${label.toLowerCase()}`}
+        />
+      ) : (
+        <Text style={styles.fieldValue}>{value || "Not set"}</Text>
+      )}
+    </View>
+  );
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text>Loading profile...</Text>
       </View>
     );
   }
@@ -50,34 +103,74 @@ const ProfilePage = () => {
         {/* Profile Header */}
         <View style={styles.header}>
           <Ionicons name="person-circle" size={80} color="#3B82F6" />
-          <Text style={styles.name}>Wells</Text>
-          <Text style={styles.email}>wells@example.com</Text>
+          <View style={styles.nameContainer}>
+            {editing ? (
+              <>
+                <TextInput
+                  style={[styles.nameInput, styles.editingName]}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  placeholder="First Name"
+                />
+                <TextInput
+                  style={[styles.nameInput, styles.editingName]}
+                  value={lastName}
+                  onChangeText={setLastName}
+                  placeholder="Last Name"
+                />
+              </>
+            ) : (
+              <>
+                <Text style={styles.name}>
+                  {firstName} {lastName}
+                </Text>
+                <Text style={styles.email}>{user?.email}</Text>
+              </>
+            )}
+          </View>
         </View>
 
-        {/* Upcoming Appointments */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Upcoming Appointments</Text>
-          <Text style={styles.cardValue}>
-            {upcomingAppointmentsCount} appointment
-            {upcomingAppointmentsCount !== 1 ? "s" : ""}
-          </Text>
+        {/* Action Buttons */}
+        <View style={styles.buttonContainer}>
+          {editing ? (
+            <>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleUpdateProfile}
+              >
+                <Ionicons name="checkmark-circle" size={24} color="white" />
+                <Text style={styles.buttonText}>Save Changes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setEditing(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => setEditing(true)}
+            >
+              <Ionicons name="pencil" size={20} color="white" />
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
-        {/* Other Information */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Phone Number</Text>
-          <Text style={styles.cardValue}>+1 234 567 890</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Date of Birth</Text>
-          <Text style={styles.cardValue}>January 1, 1990</Text>
-        </View>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Address</Text>
-          <Text style={styles.cardValue}>123 Main St, City, Country</Text>
+        {/* Profile Details */}
+        <View style={styles.detailsContainer}>
+          {renderEditableField("First Name", firstName, setFirstName)}
+          {renderEditableField("Last Name", lastName, setLastName)}
+
+          {/* Add more fields here as needed */}
         </View>
 
-        <Button title="Logout" onPress={handleLogout} />
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <Ionicons name="log-out" size={24} color="#ef4444" />
+          <Text style={styles.logoutButtonText}>Log Out</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -86,47 +179,121 @@ const ProfilePage = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
-    paddingVertical: 16,
+    backgroundColor: "#f8fafc",
   },
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    padding: 20,
   },
   header: {
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 30,
+  },
+  nameContainer: {
+    alignItems: "center",
+    marginTop: 10,
   },
   name: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#1E3A8A",
-    marginTop: 8,
+    color: "#1e293b",
+  },
+  editingName: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginVertical: 4,
   },
   email: {
     fontSize: 16,
-    color: "#6B7280",
+    color: "#64748b",
     marginTop: 4,
   },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
+  buttonContainer: {
+    marginBottom: 30,
+    alignItems: "center",
+  },
+  editButton: {
+    flexDirection: "row",
+    backgroundColor: "#3B82F6",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    gap: 8,
+  },
+  saveButton: {
+    flexDirection: "row",
+    backgroundColor: "#10b981",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    alignItems: "center",
+    gap: 8,
     marginBottom: 12,
+  },
+  cancelButton: {
+    padding: 8,
+  },
+  cancelButtonText: {
+    color: "#64748b",
+    fontWeight: "500",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "500",
+    fontSize: 16,
+  },
+  detailsContainer: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 6,
+    elevation: 3,
   },
-  cardTitle: {
-    fontSize: 16,
-    color: "#6B7280",
+  fieldContainer: {
+    marginBottom: 20,
+  },
+  fieldLabel: {
+    color: "#64748b",
+    fontSize: 14,
     marginBottom: 4,
   },
-  cardValue: {
-    fontSize: 18,
+  fieldValue: {
+    fontSize: 16,
+    color: "#1e293b",
     fontWeight: "500",
-    color: "#1E3A8A",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    backgroundColor: "#f8fafc",
+  },
+  nameInput: {
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 8,
+    padding: 12,
+    width: "80%",
+    textAlign: "center",
+    backgroundColor: "#f8fafc",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40,
+    gap: 8,
+  },
+  logoutButtonText: {
+    color: "#ef4444",
+    fontWeight: "500",
+    fontSize: 16,
   },
 });
 

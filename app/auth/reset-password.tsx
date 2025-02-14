@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, TextInput, View, Alert } from "react-native";
+import { Button, TextInput, View, Alert, StatusBar } from "react-native";
 import { useAuth } from "../context/AuthContext";
 
 export default function ResetPassword() {
@@ -17,6 +17,10 @@ export default function ResetPassword() {
 
   return (
     <View style={{ padding: 20 }}>
+      <StatusBar
+        // Android only
+        barStyle="dark-content" // changes text/icons
+      />
       <TextInput
         placeholder="Email"
         value={email}

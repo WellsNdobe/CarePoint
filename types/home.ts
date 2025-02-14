@@ -13,3 +13,9 @@ export interface Reminder {
   name: string;
   dueDate: string;
 }
+
+export interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+}

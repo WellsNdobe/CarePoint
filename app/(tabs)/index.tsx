@@ -5,7 +5,8 @@ import {
   DynamicAppointments,
   EmergencyCard,
 } from "@/components/home/index";
-import { Appointment, Reminder } from "@/types/home";
+import { Appointment, Reminder, User } from "@/types/home";
+import UserCard from "@/components/home/UserCard";
 
 const mockAppointments: Appointment[] = [];
 const mockReminders: Reminder[] = [
@@ -30,6 +31,7 @@ export default function HomeScreen() {
         // Android only
         barStyle="dark-content" // changes text/icons
       />
+      <UserCard />
 
       <HealthStatusCard />
 

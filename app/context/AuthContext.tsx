@@ -7,7 +7,8 @@ import {
   signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "../../firebaseConfig"; // Import from our firebase config
+import { auth, db } from "../../firebaseConfig"; // Import from our firebase config
+import { doc, setDoc } from "firebase/firestore";
 
 interface AuthContextType {
   user: any;
@@ -38,7 +39,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signup = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredentials = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    if (!userCredentials.user.email) {
+      throw new Error("User email is null");
+    }
+    await setDoc(doc(db, "users", userCredentials.user.email), {
+      email: email,
+    });
   };
 
   const logout = async () => {
