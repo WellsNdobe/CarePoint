@@ -24,3 +24,4 @@ export const useUserProfile = () => {
 
   return { profile, loading };
 };
+export default useUserProfile;

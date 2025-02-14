@@ -31,7 +31,6 @@ export default function HomeScreen() {
         // Android only
         barStyle="dark-content" // changes text/icons
       />
-      <UserCard />
 
       <HealthStatusCard />
 

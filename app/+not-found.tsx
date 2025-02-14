@@ -7,7 +7,10 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: "Oops!" }} />
       <View style={styles.container}>
-        <Text style={styles.title}>This doctor profile doesn't exist!</Text>
+        <Text style={styles.title}>
+          Oops! We wonder how you ended up here but the page you wanted does not
+          exist or still in development
+        </Text>
         <Text style={styles.subtitle}>
           The page you're looking for couldn't be found
         </Text>
