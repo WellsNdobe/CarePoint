@@ -1,23 +1,23 @@
 // components/profile/ProfilePage.tsx
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, ScrollView, Button } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; // Adjust the path to your firebaseConfig
+import { useAuth } from "../context/AuthContext";
 
 const ProfilePage = () => {
+  const { user, logout } = useAuth(); // useAuth is now inside the component
   const [upcomingAppointmentsCount, setUpcomingAppointmentsCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Fetch the number of upcoming appointments
   useEffect(() => {
     const fetchUpcomingAppointments = async () => {
       try {
         const appointmentsRef = collection(db, "appointments");
-        const q = query(appointmentsRef, where("status", "==", "pending")); // Filter by "pending" status
+        const q = query(appointmentsRef, where("status", "==", "pending"));
         const querySnapshot = await getDocs(q);
-
-        setUpcomingAppointmentsCount(querySnapshot.size); // Count the number of pending appointments
+        setUpcomingAppointmentsCount(querySnapshot.size);
       } catch (error) {
         console.error("Error fetching appointments: ", error);
       } finally {
@@ -27,6 +27,14 @@ const ProfilePage = () => {
 
     fetchUpcomingAppointments();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -55,21 +63,21 @@ const ProfilePage = () => {
           </Text>
         </View>
 
-        {/* Other Information (Hardcoded for now) */}
+        {/* Other Information */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Phone Number</Text>
           <Text style={styles.cardValue}>+1 234 567 890</Text>
         </View>
-
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Date of Birth</Text>
           <Text style={styles.cardValue}>January 1, 1990</Text>
         </View>
-
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Address</Text>
           <Text style={styles.cardValue}>123 Main St, City, Country</Text>
         </View>
+
+        <Button title="Logout" onPress={handleLogout} />
       </View>
     </ScrollView>
   );
@@ -123,4 +131,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePage;
-// components/home/HealthStatusCard.tsx
