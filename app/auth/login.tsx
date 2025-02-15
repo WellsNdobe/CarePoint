@@ -17,6 +17,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
+  const { loginAsGuest } = useAuth();
 
   const handleLogin = async () => {
     try {
@@ -27,11 +28,6 @@ export default function Login() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Implement Google login logic here
-    Alert.alert("Coming Soon", "Google login will be available soon");
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar
@@ -40,15 +36,11 @@ export default function Login() {
       />
       <Text style={styles.title}>Welcome back to CarePoint</Text>
 
-      {/* Google Login Button */}
-      <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg",
-          }}
-          style={styles.googleIcon}
-        />
-        <Text style={styles.googleButtonText}>Login with Google</Text>
+      <TouchableOpacity
+        style={[styles.loginButton, { backgroundColor: "#A0A4B8" }]} // Gray color for guest login
+        onPress={loginAsGuest}
+      >
+        <Text style={styles.buttonText}>Continue as guest</Text>
       </TouchableOpacity>
 
       <Text style={styles.orText}>━ OR ━</Text>

@@ -5,12 +5,13 @@ import {
   StyleSheet,
   Modal,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { db, auth } from "../../firebaseConfig"; // Adjust path if necessary
+import { db, auth } from "../../firebaseConfig";
 
 interface Appointment {
   id: string;
@@ -73,12 +74,12 @@ const DynamicAppointments = () => {
     };
 
     fetchAppointments();
-  }, []);
+  }, [auth.currentUser]); // Ensure it updates when the user changes
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#7752FE" />
       </View>
     );
   }
@@ -87,7 +88,7 @@ const DynamicAppointments = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Upcoming Appointments</Text>
-        {appointments.length > 1 && (
+        {appointments.length > 0 && (
           <TouchableOpacity onPress={() => setModalVisible(true)}>
             <Text style={styles.seeAll}>See All</Text>
           </TouchableOpacity>

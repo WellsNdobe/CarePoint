@@ -6,18 +6,17 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   sendPasswordResetEmail,
-  GoogleAuthProvider,
 } from "firebase/auth";
-import { auth, db } from "../../firebaseConfig"; // Import from our firebase config
-import { doc, setDoc } from "firebase/firestore";
+import { auth } from "../../firebaseConfig"; // Import from firebase config
 
 interface AuthContextType {
-  user: any;
+  user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  loginAsGuest: () => Promise<void>; // Added guest login function
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,25 +44,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email,
       password
     );
-    if (!userCredentials.user.email) {
-      throw new Error("User email is null");
-    }
-    await setDoc(doc(db, "users", userCredentials.user.email), {
-      email: email,
-    });
+    setUser(userCredentials.user);
   };
 
   const logout = async () => {
     await signOut(auth);
+    setUser(null);
   };
 
   const resetPassword = async (email: string) => {
     await sendPasswordResetEmail(auth, email);
   };
 
+  const loginAsGuest = async () => {
+    await signInWithEmailAndPassword(auth, "example@gmail.com", "Default");
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, signup, logout, resetPassword }}
+      value={{
+        user,
+        isLoading,
+        login,
+        signup,
+        logout,
+        resetPassword,
+        loginAsGuest,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -77,4 +84,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
 export default AuthContext;

@@ -9,39 +9,33 @@ const UserCard: React.FC = () => {
   }
   const { user } = authContext;
 
-  // Extract the first name from the user object or default to "User"
-  const firstName = user?.firstName || "User";
+  // Check if the user is logged in as a guest
+  const isGuest = user?.email === "example@gmail.com";
+
+  if (!isGuest) return null;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Welcome, {firstName}!</Text>
-      <Text style={styles.text}>We're glad to have you back.</Text>
+      <Text style={styles.warningText}>
+        ⚠ You are using a guest account. This account is shared and not private.
+      </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    padding: 12,
+    backgroundColor: "#ffcc00",
     borderRadius: 8,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    alignItems: "center",
+    marginBottom: 10,
   },
-  heading: {
-    fontSize: 24,
+  warningText: {
+    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 8,
-    color: "#1e293b", // A dark shade for better readability
-  },
-  text: {
-    fontSize: 16,
-    color: "#64748b", // A softer shade for secondary text
+    color: "#6b4000",
+    textAlign: "center",
   },
 });
 
