@@ -57,7 +57,7 @@ const HealthStatusCard = () => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -66,18 +66,18 @@ const HealthStatusCard = () => {
     <TouchableOpacity style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Health Summary</Text>
-        <Ionicons name="medkit" size={20} color="#3B82F6" />
+        <Ionicons name="medkit" size={24} color="#2563EB" />
       </View>
 
       {/* Last Checkup */}
       <View style={styles.item}>
-        <Ionicons name="calendar" size={16} color="#6B7280" />
+        <Ionicons name="calendar" size={20} color="#9CA3AF" />
         <Text style={styles.text}>Last Checkup: {lastCheckup || "N/A"}</Text>
       </View>
 
       {/* Next Appointment */}
       <View style={styles.item}>
-        <Ionicons name="time" size={16} color="#6B7280" />
+        <Ionicons name="time" size={20} color="#9CA3AF" />
         <Text style={styles.text}>
           Next Appointment: {nextAppointment || "No upcoming appointments"}
         </Text>
@@ -88,30 +88,40 @@ const HealthStatusCard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F0F9FF",
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 20,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1E3A8A",
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1F2937",
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 4,
+    marginVertical: 6,
   },
   text: {
-    color: "#374151",
-    marginLeft: 8,
+    color: "#4B5563",
+    marginLeft: 10,
+    fontSize: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#6B7280",
   },
 });
 

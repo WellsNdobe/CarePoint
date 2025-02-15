@@ -125,7 +125,15 @@ const DynamicAppointments = () => {
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>All Appointments</Text>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>All Appointments</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Ionicons name="close" size={24} color="#374151" />
+              </TouchableOpacity>
+            </View>
             <FlatList
               data={appointments}
               keyExtractor={(item) => item.id}
@@ -141,68 +149,123 @@ const DynamicAppointments = () => {
                 </View>
               )}
             />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+    paddingHorizontal: 16,
+  },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 24,
+    paddingVertical: 8,
   },
-  title: { fontSize: 18, fontWeight: "bold" },
-  seeAll: { color: "#7752FE", fontWeight: "bold" },
+  title: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#111827",
+  },
+  seeAll: {
+    color: "#3B82F6",
+    fontSize: 14,
+    fontWeight: "500",
+  },
   appointmentCard: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
     padding: 16,
-    borderRadius: 10,
-    marginTop: 10,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#F3F4F6",
   },
-  appointmentInfo: { flex: 1 },
-  doctorName: { fontSize: 16, fontWeight: "bold" },
-  specialization: { color: "#6B7280" },
-  time: { color: "#6B7280", fontSize: 14 },
-  emptyContainer: { alignItems: "center", marginTop: 20 },
-  emptyText: { color: "#9CA3AF", marginTop: 10 },
+  appointmentInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  doctorName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#111827",
+    marginBottom: 4,
+  },
+  specialization: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginBottom: 4,
+  },
+  time: {
+    fontSize: 13,
+    color: "#9CA3AF",
+    fontWeight: "500",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#6B7280",
+    marginVertical: 16,
+  },
   bookButton: {
-    backgroundColor: "#7752FE",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
+    backgroundColor: "#3B82F6",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
   },
-  bookButtonText: { color: "white", fontWeight: "bold" },
+  bookButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "flex-end",
   },
   modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 24,
+    maxHeight: "80%",
   },
-  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  closeButton: {
-    backgroundColor: "#7752FE",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 16,
   },
-  closeButtonText: { color: "white", fontWeight: "bold" },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#111827",
+  },
+  closeButton: {
+    padding: 8,
+  },
+  closeButtonText: {
+    color: "#374151",
+    fontWeight: "600",
+    fontSize: 14,
+  },
 });
 
 export default DynamicAppointments;
