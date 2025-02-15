@@ -40,21 +40,6 @@ export default function Signup() {
       />
       <Text style={styles.title}>Create Account</Text>
 
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleSignup}
-      >
-        <Image
-          source={{
-            uri: "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg",
-          }}
-          style={styles.googleIcon}
-        />
-        <Text style={styles.googleButtonText}>Sign up with Google</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.orText}>━ OR ━</Text>
-
       <TextInput
         placeholder="Email"
         value={email}
@@ -119,38 +104,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#E0E0E0",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  googleIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
-  },
-  googleButtonText: {
-    color: "#2A2E43",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  orText: {
-    color: "#A0A4B8",
-    textAlign: "center",
-    marginVertical: 15,
-    fontSize: 16,
-  },
+
   signupButton: {
     backgroundColor: "#4285F4",
     borderRadius: 10,
