@@ -27,11 +27,6 @@ export default function Signup() {
     }
   };
 
-  const handleGoogleSignup = () => {
-    // Implement Google signup logic here
-    Alert.alert("Coming Soon", "Google signup will be available soon");
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar
