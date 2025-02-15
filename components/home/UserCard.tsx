@@ -17,7 +17,8 @@ const UserCard: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.warningText}>
-        ⚠ You are using a guest account. This account is shared and not private.
+        ⚠ You are using a guest account meant for testing. This account is
+        shared and not private.
       </Text>
     </View>
   );
