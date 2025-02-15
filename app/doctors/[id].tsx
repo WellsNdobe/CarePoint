@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
-  Alert,
+  StatusBar,
 } from "react-native";
 import { Doctor } from "@/types/doctor";
 import { doctors } from "@/services/mockDoctors";
@@ -150,6 +150,7 @@ export default function DoctorDetailScreen() {
       style={styles.container}
       contentContainerStyle={{ paddingBottom: theme.spacing.xl * 2 }}
     >
+      <StatusBar barStyle="dark-content" backgroundColor={theme.colors.white} />
       {/* Profile Header */}
       <View style={styles.card}>
         <View style={styles.headerContainer}>
