@@ -1,6 +1,6 @@
 ##CarePoint 
 
-CarePoint is a React Native Expo application designed to help users find medical professionals based on specialization and location, view available services and pricing, and book appointments seamlessly. With an integrated ambulance request system, AI-powered medical assistance, and real-time service availability, CarePoint revolutionizes healthcare accessibility.
+CarePoint is a React Native Expo application designed to help users find medical professionals based on specialization and location, view available services and pricing, and book appointments seamlessly. With soon to add integrated ambulance request system, AI-powered medical assistance, and real-time service availability, CarePoint revolutionizes healthcare accessibility.
 
 ##Features 
 
